@@ -13,7 +13,9 @@ class ServicesController extends Controller
      */
     public function index()
     {
-        //
+        $title = "Services";
+        $services = Services::paginate(5);
+        return view("services", compact("title", "services"));
     }
 
     /**
