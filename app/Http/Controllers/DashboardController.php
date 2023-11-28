@@ -27,7 +27,7 @@ class DashboardController extends Controller
         }
 
         $role = Role::where('id', 3)->first();
-        $todayUser = $role->users()->where('created_at', '>=', $now)->count();
+        $todayUser = User::where('role_id', $role->id)->where('created_at', '>=', $now)->count();
 
         $newClient = Bookings::where('status',1)->count();
 
