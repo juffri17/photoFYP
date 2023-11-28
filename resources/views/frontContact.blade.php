@@ -141,7 +141,7 @@
                 <div class="col-8">
                     <div class="card">
                         <div class="card-body">
-                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3981.569200535846!2d101.52151107432549!3d3.6850189962889606!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cb87e1d4094865%3A0x5637ff2d73f0399!2sUniversiti%20Pendidikan%20Sultan%20Idris!5e0!3m2!1sen!2smy!4v1701187811643!5m2!1sen!2smy" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                            <iframe class="rounded w-100" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3981.569200535846!2d101.52151107432549!3d3.6850189962889606!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cb87e1d4094865%3A0x5637ff2d73f0399!2sUniversiti%20Pendidikan%20Sultan%20Idris!5e0!3m2!1sen!2smy!4v1701187811643!5m2!1sen!2smy" style="border:0;height:75vh" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                         </div>
                     </div>
                 </div>
