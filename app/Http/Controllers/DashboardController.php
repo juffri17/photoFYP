@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Spatie\Permission\Models\Role;
 use App\Models\User;
 use App\Models\Bookings;
 use Illuminate\Http\Request;
+use App\Models\BookingDetails;
 use Illuminate\Support\Carbon;
+use Spatie\Permission\Models\Role;
 
 class DashboardController extends Controller
 {
@@ -20,31 +21,22 @@ class DashboardController extends Controller
         $title = "Dashboard";
         $now = Carbon::now();
 
-        $todayMoney = Bookings::with("booking_details")
-        ->where('status', 3)
-        ->where('updated_at', '>=', $now)
-        ->get();
+        $todayMoney = BookingDetails::with("bookings")
+        ->where('payment_date', '>=', $now)
+        ->where('payment_status', 'Paid')
+        ->sum('payment_price');
 
-        if ($todayMoney->count() > 0) {
-            $todayMoney = '1000';
-        } else {
-            $todayMoney = 0;
-        }
+        // dd($todayMoney);
+
 
         $role = Role::where('id', 3)->first();
         $todayUser = User::where('created_at', '>=', $now)->count();
 
         $newClient = Bookings::where('status',1)->count();
 
-        $totalMoney = Bookings::with("booking_details")
-        ->where('status', 3)
-        ->get();
-
-        if ($totalMoney->count() > 0) {
-            $totalMoney = '1000';
-        } else {
-            $totalMoney = 0;
-        }
+        $totalMoney = BookingDetails::with("bookings")
+        ->where('payment_status', 'Paid')
+        ->sum('payment_price');
 
         return view("dashboard", ['title' => $title,'todayMoney' => $todayMoney,'todayUser' => $todayUser,'newClient' => $newClient,'totalMoney' => $totalMoney]);
     }

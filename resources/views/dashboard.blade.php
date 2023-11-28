@@ -10,7 +10,7 @@
                             <div class="numbers">
                                 <p class="text-sm mb-0 text-capitalize font-weight-bold">Today's Money</p>
                                 <h5 class="font-weight-bolder mb-0">
-                                    RM {{ $todayMoney ? $todayMoney : 0 }}
+                                    RM {{ $todayMoney ? number_format($todayMoney, 2) : 0 }}
                                     {{-- <span class="text-success text-sm font-weight-bolder">+55%</span> --}}
                                 </h5>
                             </div>
@@ -76,7 +76,7 @@
                             <div class="numbers">
                                 <p class="text-sm mb-0 text-capitalize font-weight-bold">Sales</p>
                                 <h5 class="font-weight-bolder mb-0">
-                                    RM {{ $totalMoney ? $totalMoney : 0 }}
+                                    RM {{ $totalMoney ? number_format($totalMoney, 2) : 0 }}
                                     {{-- <span class="text-success text-sm font-weight-bolder">+5%</span> --}}
                                 </h5>
                             </div>
