@@ -22,4 +22,40 @@
     <!-- Nepcha Analytics (nepcha.com) -->
     <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
     <script defer data-site="{{ config('app.url') }}" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .filter-bar-vessel {
+            list-style-type: none;
+            padding-left: 0;
+            /* display: flex; */
+        }
+
+        .filter-bar-vessel .filter-item {
+            display: inline-block;
+        }
+
+        .filter-bar-vessel .filter-item.search-bar {
+            display: block !important;
+        }
+
+        .filter-bar-vessel .filter-item {
+            width: 100%;
+            margin: 5px 0px;
+        }
+
+        .filter-bar-vessel>section {
+            width: 100%;
+        }
+
+        .filter-bar-vessel .filter-item .custom-dropdown button,
+        .filter-bar-vessel .filter-item button {
+            width: 100% !important;
+        }
+
+        .error-list {
+            list-style-type: none;
+            padding: 0;
+        }
+    </style>
 </head>
