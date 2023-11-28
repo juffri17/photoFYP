@@ -69,7 +69,9 @@ class BookingsController extends Controller
      */
     public function create()
     {
-        //
+        $title = "Create Booking";
+        $services = Services::all();
+        return view("bookings/create", compact("title", "services"));
     }
 
     /**
@@ -129,6 +131,45 @@ class BookingsController extends Controller
             Mail::to($request->client_email)->send(new \App\Mail\NewAccountMail($details));
 
             return response()->json(["status" => 'success', "message" => "Booking created successfully, Please check your email for further details"]);
+        } catch (\Throwable $th) {
+            return response()->json(["status" => 'error', "message" => "Booking not created"]);
+        }
+    }
+
+    public function storev2(Request $request)
+    {
+        $request->validate([
+            "client_name" => "required",
+            "client_phone" => "required | numeric",
+            "client_date" => "required | date",
+            "service_id" => "required | numeric",
+        ]);
+
+        try {
+            $services = Services::find($request->service_id);
+
+            $bookings = new Bookings();
+
+            $bookings->client_id = $request->client_id;
+            $bookings->photographer_id = 1;
+            $bookings->date = $request->client_date;
+            $bookings->service_id = $request->service_id;
+            $bookings->status = 1;
+            $bookings->save();
+
+            $bookingDetails = new BookingDetails();
+
+            $bookingDetails->booking_id = $bookings->id;
+            $bookingDetails->name = $request->client_name;
+            $bookingDetails->email = $request->client_email;
+            $bookingDetails->phone = $request->client_phone;
+            $bookingDetails->company_name = $request->client_company_name ?? "";
+            $bookingDetails->message = $request->client_message ?? "";
+            $bookingDetails->total_price = $services->price;
+            $bookingDetails->payment_method = 1;
+            $bookingDetails->save();
+
+            return response()->json(["status" => 'success', "message" => "Booking created successfully!"]);
         } catch (\Throwable $th) {
             return response()->json(["status" => 'error', "message" => "Booking not created"]);
         }

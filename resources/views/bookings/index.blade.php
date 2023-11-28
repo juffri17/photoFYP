@@ -90,8 +90,8 @@
     <div class="card mt-5">
         <div class="card-header pb-0">
             {{-- add button --}}
-            {{-- <a href="{{ route('services.create') }}" class="btn btn-primary btn-sm float-end"><i
-                    class="fa fa-plus"></i>&nbsp; Add Service</a> --}}
+            <a href="{{ route('bookings.create') }}" class="btn btn-primary btn-sm float-end"><i
+                    class="fa fa-plus"></i>&nbsp; Add Bookings</a>
             {{-- add button --}}
         </div>
         <div class="table-responsive">
@@ -186,11 +186,13 @@
                                         </a>
                                     @endif
                                     @if ($booking->booking_details['payment_status'] == 'pending' || auth()->user()->hasRole('Super Admin'))
+                                    {{-- @if($booking->status == 4) --}}
                                     <a href="javascript:;" onclick="openPayment('{{ $booking['id'] }}','{{ number_format($booking->booking_details['total_price'], 2) }} ')"
                                         class="text-secondary font-weight-bold text-xs d-block mb-2"
                                         data-toggle="tooltip" data-original-title="Delete user">
                                         Make Payment
                                     </a>
+                                    {{-- @endif --}}
                                     @endif
                                     @if (auth()->user()->hasRole('Super Admin') && $booking->booking_details['payment_status'] == 'Paid' )
                                         <a href="{{ asset('storage/'.$booking->booking_details['payment_proof']) }}" target="_blank"

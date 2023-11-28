@@ -29,6 +29,9 @@
                         <li class="nav-item">
                             <a class="nav-link" href="#"><i class="fas fa-envelope"></i></a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/account-login') }}"><i class="fa fa-sign-in"></i></a>
+                        </li>
                     </ul>
                 </div>
             </div>

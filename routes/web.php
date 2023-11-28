@@ -42,7 +42,9 @@ Route::post('/services/delete',[ServicesController::class,'delete'])->name('serv
 Route::post('/services/view',[ServicesController::class,'view'])->name('services.view');
 
 Route::get('/bookings',[App\Http\Controllers\BookingsController::class,'index'])->name('bookings');
+Route::get('/bookings/create',[App\Http\Controllers\BookingsController::class,'create'])->name('bookings.create');
 Route::post('/bookings/store',[App\Http\Controllers\BookingsController::class,'store'])->name('bookings.store');
+Route::post('/bookings/storev2',[App\Http\Controllers\BookingsController::class,'storev2'])->name('bookings.storev2');
 Route::post('/bookings/cancel',[App\Http\Controllers\BookingsController::class,'cancel'])->name('bookings.cancel');
 Route::post('/bookings/progress',[App\Http\Controllers\BookingsController::class,'progress'])->name('bookings.progress');
 Route::post('/bookings/payment',[App\Http\Controllers\BookingsController::class,'payment'])->name('bookings.payment');
