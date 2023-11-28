@@ -46,6 +46,8 @@ Route::get('/welcome', [App\Http\Controllers\HomeController::class, 'welcome'])-
 Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 Route::get('/frontPage', [App\Http\Controllers\FrontPageController::class, 'index'])->name('frontPage');
 Route::get('/frontGallery', [App\Http\Controllers\FrontPageController::class, 'gallery'])->name('frontGallery');
+Route::get('/frontAbout', [App\Http\Controllers\FrontPageController::class, 'about'])->name('frontAbout');
+Route::get('/frontContact', [App\Http\Controllers\FrontPageController::class, 'contact'])->name('frontContact');
 
 
 Route::get('send-mail', function () {
