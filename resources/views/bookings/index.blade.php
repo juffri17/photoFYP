@@ -22,32 +22,33 @@
                                             id="status-filter" data-live-search="true">
                                             <option value="">All Status</option>
                                             @php
-                                            $statuses = [
-                                            1 => 'Pending',
-                                            2 => 'Ongoing',
-                                            3 => 'Completed',
-                                            4 => 'Cancelled',
-                                            ];
+                                                $statuses = [
+                                                    1 => 'Pending',
+                                                    2 => 'Ongoing',
+                                                    3 => 'Completed',
+                                                    4 => 'Cancelled',
+                                                ];
                                             @endphp
                                             @foreach ($statuses as $key => $status)
-                                            @if (Request::get('status') == $key)
-                                                <option value="{{ $key }}" selected>{{ $status }}</option>
-                                            @endif
+                                                @if (Request::get('status') == $key)
+                                                    <option value="{{ $key }}" selected>{{ $status }}
+                                                    </option>
+                                                @endif
                                                 <option value="{{ $key }}">{{ $status }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="filter-item">
                                         <label for="package-filter" class="form-control-label">Service</label>
-                                        <select name="service_id" class="form-select form-select-sm"
-                                            id="package-filter" data-live-search="true">
+                                        <select name="service_id" class="form-select form-select-sm" id="package-filter"
+                                            data-live-search="true">
                                             <option value="">All Services</option>
                                             @if (!empty($services))
                                                 @foreach ($services as $service)
-                                                @if (Request::get('service_id') == $service['id'])
-                                                    <option value="{{ $service['id'] }}" selected>
-                                                        {{ $service['service_name'] }}</option>
-                                                @endif
+                                                    @if (Request::get('service_id') == $service['id'])
+                                                        <option value="{{ $service['id'] }}" selected>
+                                                            {{ $service['service_name'] }}</option>
+                                                    @endif
                                                     <option value="{{ $service['id'] }}">
                                                         {{ $service['service_name'] }}</option>
                                                 @endforeach
@@ -59,9 +60,8 @@
                                     <div class="filter-item" style="margin-right: 10px;">
                                         <label for="example-datetime-local-from" class="form-control-label">From</label>
                                         <input class="form-control" type="date" name="from"
-                                            value="{{ Request::get('from') ?? '' }}"
-                                            id="example-datetime-local-from" onfocus="focused(this)"
-                                            onfocusout="defocused(this)">
+                                            value="{{ Request::get('from') ?? '' }}" id="example-datetime-local-from"
+                                            onfocus="focused(this)" onfocusout="defocused(this)">
                                     </div>
                                     <div class="filter-item">
                                         <label for="example-datetime-local-to" class="form-control-label">To</label>
@@ -163,23 +163,43 @@
                                         @endif
                                     </span>
                                 </td>
-                                {{-- <td class="align-middle text-center">
-                                    <a href="javascript:;" onclick="openView('{{ $booking['id'] }}')"
-                                        class="text-secondary font-weight-bold text-xs d-block mb-2"
-                                        data-toggle="tooltip" data-original-title="View user">
-                                        View
-                                    </a>
-                                    <a href="javascript:;" onclick="openEdit('{{ $booking['id'] }}')"
-                                        class="text-secondary font-weight-bold text-xs d-block mb-2"
-                                        data-toggle="tooltip" data-original-title="Edit user">
-                                        Edit
-                                    </a>
-                                    <a href="javascript:;" onclick="openDelete('{{ $booking['id'] }}')"
+                                <td class="align-middle text-center">
+                                    @if (auth()->user()->hasRole('Client'))
+                                        <a href="https://wa.me/6010101234" target="_blank"
+                                            class="text-secondary font-weight-bold text-xs d-block mb-2"
+                                            data-toggle="tooltip" data-original-title="View user">
+                                            Whatsapp Photographer
+                                        </a>
+                                    @endif
+                                    @if ($booking['status'] == 1)
+                                        <a href="javascript:;" onclick="openCancel('{{ $booking['id'] }}')"
+                                            class="text-secondary font-weight-bold text-xs d-block mb-2"
+                                            data-toggle="tooltip" data-original-title="Delete user">
+                                            Cancel Booking
+                                        </a>
+                                    @endif
+                                    @if (auth()->user()->hasRole('Super Admin'))
+                                        <a href="javascript:;" onclick="openProgress('{{ $booking['id'] }}')"
+                                            class="text-secondary font-weight-bold text-xs d-block mb-2"
+                                            data-toggle="tooltip" data-original-title="Delete user">
+                                            Update Progress
+                                        </a>
+                                    @endif
+                                    @if ($booking->booking_details['payment_status'] == 'pending' || auth()->user()->hasRole('Super Admin'))
+                                    <a href="javascript:;" onclick="openPayment('{{ $booking['id'] }}','{{ number_format($booking->booking_details['total_price'], 2) }} ')"
                                         class="text-secondary font-weight-bold text-xs d-block mb-2"
                                         data-toggle="tooltip" data-original-title="Delete user">
-                                        Delete
+                                        Make Payment
                                     </a>
-                                </td> --}}
+                                    @endif
+                                    @if (auth()->user()->hasRole('Super Admin') && $booking->booking_details['payment_status'] == 'Paid' )
+                                        <a href="{{ asset('storage/'.$booking->booking_details['payment_proof']) }}" target="_blank"
+                                            class="text-secondary font-weight-bold text-xs d-block mb-2"
+                                            data-toggle="tooltip" data-original-title="Delete user">
+                                            View Payment
+                                        </a>
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                     @else
@@ -200,23 +220,72 @@
     </div>
 </div>
 <!-- Modal -->
-<div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+<div class="modal fade" id="openStatus" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Gallery</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Status</h5>
                 <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <form id="formStatus">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="progress">Progress</label>
+                        <select name="progress" id="progress" class="form-control">
+                            <option value="1">Pending</option>
+                            <option value="2">Ongoing</option>
+                            <option value="3">Completed</option>
+                        </select>
+                    </div>
+                    <input type="hidden" name="booking_id">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" onclick="submitProgress()" class="btn bg-gradient-primary">Save
+                        changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
+<div class="modal fade" id="openPayment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Payment</h5>
+                <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Close</button>
-                {{-- <button type="button" class="btn bg-gradient-primary">Save changes</button> --}}
-            </div>
+            <form id="formPayment">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="progress">Total need to Pay</label>
+                        <p id="total_price"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="progress">Pay MYR :</label>
+                        <input type="text" name="total_payment" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="progress">Payment Proof</label>
+                        <input type="file" name="payment_proof" class="form-control">
+                    </div>
+                    <input type="hidden" name="booking_id">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" onclick="submitPayment()" class="btn bg-gradient-primary">Save
+                        changes</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -226,22 +295,21 @@
         $('#formSearch').submit();
     }
 
-    const openEdit = (id) => {
-        window.location.href = "{{ url('services/edit') }}/" + id;
-    }
+    const openCancel = (id) => {
 
-    const openDelete = (id) => {
         Swal.fire({
             title: 'Are you sure?',
-            text: "You want to delete this service?",
+            text: "You want to cancel this booking?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33'
+            cancelButtonColor: '#d33',
+
+            confirmButtonText: 'Yes, cancel it!'
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "{{ route('services.delete') }}",
+                    url: "{{ route('bookings.cancel') }}",
                     method: "POST",
                     data: {
                         "_token": "{{ csrf_token() }}",
@@ -255,7 +323,7 @@
                                 text: res.message,
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    window.location.href = "{{ route('services') }}";
+                                    window.location.href = "{{ route('bookings') }}";
                                 }
                             });
                         }
@@ -267,38 +335,41 @@
                                 text: res.message,
                             });
                         }
+                    },
+                    error: (err) => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: err.message,
+                        });
                     }
                 });
             }
         });
     }
 
-    const openView = (id) => {
+    const openProgress = (id) => {
+        $('#openStatus').modal('show');
+        $('#formStatus').find('input[name="booking_id"]').val(id);
+    }
+
+    const submitProgress = () => {
+        let formData = $('#formStatus').serialize();
         $.ajax({
-            url: "{{ route('services.view') }}",
+            url: "{{ route('bookings.progress') }}",
             method: "POST",
-            data: {
-                "_token": "{{ csrf_token() }}",
-                "id": id
-            },
+            data: formData,
             success: (res) => {
                 if (res.status == 'success') {
-                    // $('#viewModal .modal-body').html(res.data);
-                    $('#viewModal').modal('show');
-                    let html =
-                        '<div class="container mt-4"><div class="row row-cols-1 row-cols-md-3 g-4">';
-                    let images = JSON.parse(res.data.image);
-                    images.forEach((image, index) => {
-                        html += `<div class="col">
-                            <div class="card">
-                                <img src="{{ asset('images') }}/${image}" class="card-img-top" alt="Image ${index + 1}" style="width: 100%;height:200px;">
-                            </div>
-                        </div>`;
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: res.message,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "{{ route('bookings') }}";
+                        }
                     });
-
-                    html += '</div></div>';
-                    $('#viewModal .modal-body').html(html);
-
                 }
 
                 if (res.status == 'error') {
@@ -308,6 +379,66 @@
                         text: res.message,
                     });
                 }
+            },
+            error: (err) => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: err.message,
+                });
+            }
+        });
+    }
+
+    const openPayment = (id,price) => {
+        $('#openPayment').modal('show');
+        $('#formPayment').find('input[name="booking_id"]').val(id);
+        $('#total_price').html('MYR '+price);
+    }
+
+    const submitPayment = () => {
+        let formData = new FormData($('#formPayment')[0]);
+        $.ajax({
+            url: "{{ route('bookings.payment') }}",
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: (res) => {
+                if (res.status == 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: res.message,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "{{ route('bookings') }}";
+                        }
+                    });
+                }
+
+                if (res.status == 'error') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: res.message,
+                    });
+                }
+            },
+            error: (err) => {
+
+                let errors = err.responseJSON.errors;
+                let errorHtml = '<ul class="error-list">';
+                for (const [key, value] of Object.entries(errors)) {
+                    errorHtml += `<li>${value}</li>`;
+                }
+                errorHtml += '</ul>';
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    html: errorHtml,
+                });
             }
         });
     }

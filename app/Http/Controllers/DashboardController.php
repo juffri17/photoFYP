@@ -12,6 +12,11 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        if(auth()->user()->hasRole('Client'))
+        {
+            return redirect()->route('bookings');
+        }
+
         $title = "Dashboard";
         $now = Carbon::now();
 
@@ -27,7 +32,7 @@ class DashboardController extends Controller
         }
 
         $role = Role::where('id', 3)->first();
-        $todayUser = User::where('role_id', $role->id)->where('created_at', '>=', $now)->count();
+        $todayUser = User::where('created_at', '>=', $now)->count();
 
         $newClient = Bookings::where('status',1)->count();
 

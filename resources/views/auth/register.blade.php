@@ -36,6 +36,8 @@
   <!-- Nepcha Analytics (nepcha.com) -->
   <!-- Nepcha is a easy-to-use web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. -->
   <script defer data-site="YOUR_DOMAIN_HERE" src="https://api.nepcha.com/js/nepcha-analytics.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="">
@@ -130,6 +132,32 @@
 </body>
 
 </html>
+
+<script>
+    $(document).ready(function(){
+        @error('name')
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '{{ $message }}',
+            });
+        @enderror
+        @error('email')
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '{{ $message }}',
+            });
+        @enderror
+        @error('password')
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '{{ $message }}',
+            });
+        @enderror
+    });
+</script>
 
 {{-- @extends('layouts.app')
 

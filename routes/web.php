@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\DashboardController;
 
@@ -17,11 +18,15 @@ use App\Http\Controllers\DashboardController;
 */
 
 Route::get('/', function () {
-    return view('/frontPage');
+    return redirect(route('frontPage'));
 });
 
-Route::get('/login', function () {
+Route::get('/account-login', function () {
     return view('/auth/login');
+});
+
+Route::get('/account-register', function () {
+    return view('/auth/register');
 });
 
 Auth::routes();
@@ -38,6 +43,12 @@ Route::post('/services/view',[ServicesController::class,'view'])->name('services
 
 Route::get('/bookings',[App\Http\Controllers\BookingsController::class,'index'])->name('bookings');
 Route::post('/bookings/store',[App\Http\Controllers\BookingsController::class,'store'])->name('bookings.store');
+Route::post('/bookings/cancel',[App\Http\Controllers\BookingsController::class,'cancel'])->name('bookings.cancel');
+Route::post('/bookings/progress',[App\Http\Controllers\BookingsController::class,'progress'])->name('bookings.progress');
+Route::post('/bookings/payment',[App\Http\Controllers\BookingsController::class,'payment'])->name('bookings.payment');
+
+Route::get('profile', [ProfileController::class, 'index'])->name('profile');
+Route::post('profile/update', [ProfileController::class, 'update'])->name('profile.update');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 //welcome
@@ -48,15 +59,3 @@ Route::get('/frontPage', [App\Http\Controllers\FrontPageController::class, 'inde
 Route::get('/frontGallery', [App\Http\Controllers\FrontPageController::class, 'gallery'])->name('frontGallery');
 Route::get('/frontAbout', [App\Http\Controllers\FrontPageController::class, 'about'])->name('frontAbout');
 Route::get('/frontContact', [App\Http\Controllers\FrontPageController::class, 'contact'])->name('frontContact');
-
-
-Route::get('send-mail', function () {
-    $details = [
-        'title' => 'Success',
-        'content' => 'This is an email testing using Laravel-Brevo',
-    ];
-
-    Mail::to('iliasdaniel1403@gmail.com')->send(new \App\Mail\TestMail($details));
-
-    return 'Email sent at ' . now();
-});

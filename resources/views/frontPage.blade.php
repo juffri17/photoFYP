@@ -124,7 +124,6 @@
             @endphp
             <div class="col-md-4">
                 <div class="card text-bg-dark">
-                    {{-- <img src="{{asset('assets/jakob-owens-DQPP9rVLYGQ-unsplash.jpg')}}" class="card-img" alt="..."> --}}
                     <img src="{{ asset('images/' . $image[0]) }}" class="card-img" alt="...">
                     <div class="card-img-overlay">
                         <h5 class="card-title bg-dark text-light p-2 rounded">{{ $service->service_name }}</h5>

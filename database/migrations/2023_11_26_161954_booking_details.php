@@ -22,7 +22,10 @@ return new class extends Migration
             $table->string('deposit')->nullable();
             $table->string('total_price')->nullable();
             $table->string('payment_method');
+            $table->string('payment_price')->nullable();
+            $table->string('payment_date')->nullable();
             $table->string('payment_status')->default('pending');
+            $table->string('payment_proof')->nullable();
             $table->timestamps();
         });
     }

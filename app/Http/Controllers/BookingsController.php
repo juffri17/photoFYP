@@ -7,6 +7,7 @@ use App\Models\Bookings;
 use App\Models\Services;
 use Illuminate\Http\Request;
 use App\Models\BookingDetails;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
@@ -47,7 +48,14 @@ class BookingsController extends Controller
         })
         ->when($request->from, function ($query) use ($request) {
             $query->whereDate('date', '>=', $request->from);
-        })
+        });
+
+        if(auth()->user()->hasRole('Client'))
+        {
+            $bookings->where('client_id', auth()->user()->id);
+        }
+
+        $bookings = $bookings
         ->orderBy('id', 'desc')
         ->paginate(5);
 
@@ -156,5 +164,71 @@ class BookingsController extends Controller
     public function destroy(Bookings $bookings)
     {
         //
+    }
+
+    public function cancel(Request $request)
+    {
+        $request->validate([
+            "id" => "required | numeric",
+        ]);
+
+        try {
+            $bookings = Bookings::find($request->id);
+
+            $bookings->status = 4;
+            $bookings->save();
+
+            return response()->json(["status" => 'success', "message" => "Booking cancelled successfully"]);
+        } catch (\Throwable $th) {
+            return response()->json(["status" => 'error', "message" => "Booking not cancelled"]);
+        }
+    }
+
+    public function progress(Request $request)
+    {
+        $request->validate([
+            "booking_id" => "required | numeric",
+            'progress' => 'required | numeric | min:0 | max:100',
+        ]);
+
+        try {
+            $bookings = Bookings::find($request->booking_id);
+
+            $bookings->status = $request->progress;
+            $bookings->save();
+
+            return response()->json(["status" => 'success', "message" => "Booking progress updated successfully"]);
+        } catch (\Throwable $th) {
+            return response()->json(["status" => 'error', "message" => "Booking progress not updated"]);
+        }
+    }
+
+    public function payment(Request $request)
+    {
+        $request->validate([
+            "booking_id" => "required | numeric",
+            'total_payment' => 'required | numeric',
+            'payment_proof' => 'required | mimes:jpeg,jpg,png,pdf | max:2048',
+        ]);
+
+        try {
+            $bookings = Bookings::find($request->booking_id);
+
+            $bookings->status = 2;
+            $bookings->save();
+
+            $bookingDetails = BookingDetails::where('booking_id', $request->booking_id)->first();
+
+            $bookingDetails->payment_price = $request->total_payment;
+            $bookingDetails->payment_proof = $request->payment_proof->store('payment_proof', 'public');
+            $bookingDetails->payment_date = Carbon::now();
+            $bookingDetails->payment_status = 'Paid';
+
+            $bookingDetails->save();
+
+            return response()->json(["status" => 'success', "message" => "Booking payment updated successfully"]);
+        } catch (\Throwable $th) {
+            return response()->json(["status" => 'error', "message" => "Booking payment not updated"]);
+        }
     }
 }

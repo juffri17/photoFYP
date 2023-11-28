@@ -50,6 +50,8 @@
                                 @foreach($images as $image)
                                 <div class="col">
                                     <div class="card">
+                                        {{-- add button remove --}}
+                                        <button type="button" class="btn btn-danger btn-sm float-end" onclick="removeImage(this)" style="position: absolute;z-index: 1;margin: 5px;">X</button>
                                         <img src="{{ asset('images/' .$image) }}" class="card-img-top" alt="Image 1" style="width: 100%;height:200px;">
                                         <input type="hidden" name="old_image[]" value="{{ $image }}">
                                         <div class="card-body">
@@ -124,5 +126,11 @@
                 });
             }
         });
+    }
+
+    const removeImage = (e) =>
+    {
+        //remove image from gallery
+        $(e).parent().parent().remove();
     }
 </script>
