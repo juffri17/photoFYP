@@ -26,7 +26,7 @@
         <h2>{{ $data['title'] }}</h2>
         <p>{{ $data['content'] }}</p>
 
-        <p>Username: <strong>{{ $data['username'] }}</strong></p>
+        <p>Email: <strong>{{ $data['username'] }}</strong></p>
         <p>Your temporary password: <strong>{{ $data['password'] }}</strong></p>
 
         <p>Click the link below to login:</p>

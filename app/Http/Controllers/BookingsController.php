@@ -8,6 +8,7 @@ use App\Models\Services;
 use Illuminate\Http\Request;
 use App\Models\BookingDetails;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class BookingsController extends Controller
 {
@@ -49,48 +50,53 @@ class BookingsController extends Controller
             "service_id" => "required | numeric",
         ]);
 
-        $services = Services::find($request->service_id);
+        try {
+            $services = Services::find($request->service_id);
 
-        $temp_password = rand(100000, 999999);
+            $temp_password = rand(100000, 999999);
 
-        $users = User::create([
-            'name' => $request->client_name,
-            'email' => $request->client_email,
-            'password' => Hash::make($temp_password),
-        ]);
-        $users->assignRole('Client');
+            $users = User::create([
+                'name' => $request->client_name,
+                'email' => $request->client_email,
+                'password' => Hash::make($temp_password),
+            ]);
+            $users->assignRole('Client');
 
-        $bookings = new Bookings();
+            $bookings = new Bookings();
 
-        $bookings->client_id = $users->id;
-        $bookings->photographer_id = 1;
-        $bookings->date = $request->client_date;
-        $bookings->service_id = $request->service_id;
-        $bookings->status = 1;
-        $bookings->save();
+            $bookings->client_id = $users->id;
+            $bookings->photographer_id = 1;
+            $bookings->date = $request->client_date;
+            $bookings->service_id = $request->service_id;
+            $bookings->status = 1;
+            $bookings->save();
 
-        $bookingDetails = new BookingDetails();
+            $bookingDetails = new BookingDetails();
 
-        $bookingDetails->booking_id = $bookings->id;
-        $bookingDetails->name = $request->client_name;
-        $bookingDetails->email = $request->client_email;
-        $bookingDetails->phone = $request->client_phone;
-        $bookingDetails->company_name = $request->client_company_name ?? "";
-        $bookingDetails->message = $request->client_message ?? "";
-        $bookingDetails->total_price = $services->price;
-        $bookingDetails->payment_method = 1;
-        $bookingDetails->save();
+            $bookingDetails->booking_id = $bookings->id;
+            $bookingDetails->name = $request->client_name;
+            $bookingDetails->email = $request->client_email;
+            $bookingDetails->phone = $request->client_phone;
+            $bookingDetails->company_name = $request->client_company_name ?? "";
+            $bookingDetails->message = $request->client_message ?? "";
+            $bookingDetails->total_price = $services->price;
+            $bookingDetails->payment_method = 1;
+            $bookingDetails->save();
 
-        //send email to client with password
-        if (isset($users->id)) {
-            dd('here');
-            // return response()->json(["status" => 'success', "message" => "Booking created successfully, Please check your email for further details"]);
-        } else {
-            // return response()->json(["status" => 'error', "message" => "Booking not created"]);
-            dd('here2');
+            $details = [
+                'title' => 'Hello ' . $request->client_name,
+                'content' => 'Welcome to Photogram, your account has been created successfully,for more details about booking can be found in your account',
+                'username' => $request->client_email,
+                'password' => $temp_password,
+                'url' => config('app.url') . '/login',
+            ];
+
+            Mail::to($request->client_email)->send(new \App\Mail\NewAccountMail($details));
+
+            return response()->json(["status" => 'success', "message" => "Booking created successfully, Please check your email for further details"]);
+        } catch (\Throwable $th) {
+            return response()->json(["status" => 'error', "message" => "Booking not created"]);
         }
-
-
     }
 
     /**

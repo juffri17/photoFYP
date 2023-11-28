@@ -250,17 +250,33 @@
 <x-footer />
 <script>
     const submitBooking = () => {
+        //swal loading
+        Swal.fire({
+            title: 'Loading...',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading()
+            },
+        });
         $.ajax({
             url: "{{ route('bookings.store') }}",
             type: "POST",
             data: $('#bookingForm').serialize(),
             success: function(response) {
-                console.log(response)
-                if (response.status == 200) {
-                    alert('Booking Success')
+                if (response.status == 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Booking Success',
+                        html: response.message,
+                    });
                     $('#bookingForm').trigger('reset')
                 } else {
-                    alert('Booking Failed')
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        html: response.message,
+                    });
                 }
             },
             error: (err) => {

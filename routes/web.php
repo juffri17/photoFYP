@@ -20,6 +20,10 @@ Route::get('/', function () {
     return view('/frontPage');
 });
 
+Route::get('/login', function () {
+    return view('/auth/login');
+});
+
 Auth::routes();
 
 Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard');
