@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\DashboardController;
@@ -16,7 +17,7 @@ use App\Http\Controllers\DashboardController;
 */
 
 Route::get('/', function () {
-    return view('/auth/login');
+    return view('/frontPage');
 });
 
 Auth::routes();
@@ -32,6 +33,7 @@ Route::post('/services/delete',[ServicesController::class,'delete'])->name('serv
 Route::post('/services/view',[ServicesController::class,'view'])->name('services.view');
 
 Route::get('/bookings',[App\Http\Controllers\BookingsController::class,'index'])->name('bookings');
+Route::post('/bookings/store',[App\Http\Controllers\BookingsController::class,'store'])->name('bookings.store');
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 //welcome
@@ -40,3 +42,15 @@ Route::get('/welcome', [App\Http\Controllers\HomeController::class, 'welcome'])-
 Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 Route::get('/frontPage', [App\Http\Controllers\FrontPageController::class, 'index'])->name('frontPage');
 Route::get('/frontGallery', [App\Http\Controllers\FrontPageController::class, 'gallery'])->name('frontGallery');
+
+
+Route::get('send-mail', function () {
+    $details = [
+        'title' => 'Success',
+        'content' => 'This is an email testing using Laravel-Brevo',
+    ];
+
+    Mail::to('iliasdaniel1403@gmail.com')->send(new \App\Mail\TestMail($details));
+
+    return 'Email sent at ' . now();
+});
