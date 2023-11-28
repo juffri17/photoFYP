@@ -21,8 +21,18 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('dashboard',[DashboardController::class,'index'])->name('dashboard');
-Route::get('services',[ServicesController::class,'index'])->name('services');
+Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard');
+
+Route::get('/services',[ServicesController::class,'index'])->name('services');
+Route::get('/services/create',[ServicesController::class,'create'])->name('services.create');
+Route::post('/services/store',[ServicesController::class,'store'])->name('services.store');
+Route::get('/services/edit/{id}',[ServicesController::class,'edit'])->name('services.edit');
+Route::post('/services/update',[ServicesController::class,'update'])->name('services.update');
+Route::post('/services/delete',[ServicesController::class,'delete'])->name('services.delete');
+Route::post('/services/view',[ServicesController::class,'view'])->name('services.view');
+
+Route::get('/bookings',[App\Http\Controllers\BookingsController::class,'index'])->name('bookings');
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 //welcome
 Route::get('/welcome', [App\Http\Controllers\HomeController::class, 'welcome'])->name('welcome');

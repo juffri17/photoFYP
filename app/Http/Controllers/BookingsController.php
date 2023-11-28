@@ -3,17 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bookings;
-use App\Http\Requests\StoreBookingsRequest;
-use App\Http\Requests\UpdateBookingsRequest;
+use Illuminate\Http\Request;
 
 class BookingsController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $title = "Bookings";
+        $bookings = Bookings::paginate(5);
+
+        if($request->search_input){
+            // $bookings = Bookings::where("service_name", "LIKE", "%$request->search_input%")
+            // ->orWhere("description", "LIKE", "%$request->search_input%")
+            // ->paginate(5);
+        }
+
+        return view("bookings/index", compact("title", "bookings"));
     }
 
     /**
