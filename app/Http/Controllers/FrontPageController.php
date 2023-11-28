@@ -17,12 +17,4 @@ class FrontPageController extends Controller
     {
         return view('frontGallery');
     }
-    public function contact()
-    {
-        return view('frontContact');
-    }
-    public function about()
-    {
-        return view('frontAbout');
-    }
 }

@@ -15,7 +15,7 @@ class DashboardController extends Controller
         $title = "Dashboard";
         $now = Carbon::now();
 
-        $todayMoney = Bookings::with("transactions")
+        $todayMoney = Bookings::with("booking_details")
         ->where('status', 3)
         ->where('updated_at', '>=', $now)
         ->get();
@@ -29,9 +29,9 @@ class DashboardController extends Controller
         $role = Role::where('id', 3)->first();
         $todayUser = $role->users()->where('created_at', '>=', $now)->count();
 
-        $newClient = Bookings::where('status',2)->count();
+        $newClient = Bookings::where('status',1)->count();
 
-        $totalMoney = Bookings::with("transactions")
+        $totalMoney = Bookings::with("booking_details")
         ->where('status', 3)
         ->get();
 
@@ -40,7 +40,7 @@ class DashboardController extends Controller
         } else {
             $totalMoney = 0;
         }
-        
+
         return view("dashboard", ['title' => $title,'todayMoney' => $todayMoney,'todayUser' => $todayUser,'newClient' => $newClient,'totalMoney' => $totalMoney]);
     }
 }

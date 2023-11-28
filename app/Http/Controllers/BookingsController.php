@@ -18,15 +18,42 @@ class BookingsController extends Controller
     public function index(Request $request)
     {
         $title = "Bookings";
-        $bookings = Bookings::paginate(5);
+        $bookings = Bookings::select('bookings.*')
+        ->with(['booking_details', 'client', 'services'])
+        ->when($request->search_input, function ($query) use ($request) {
+            $query->WhereHas('client', function ($subQuery) use ($request) {
+                    $subQuery->where('name', 'like', '%' . $request->search_input . '%')
+                        ->orWhere('email', 'like', '%' . $request->search_input . '%');
+                })
+                ->orWhereHas('booking_details', function ($subQuery) use ($request) {
+                    $subQuery->where('name', 'like', '%' . $request->search_input . '%')
+                        ->orWhere('email', 'like', '%' . $request->search_input . '%')
+                        ->orWhere('phone', 'like', '%' . $request->search_input . '%')
+                        ->orWhere('company_name', 'like', '%' . $request->search_input . '%')
+                        ->orWhere('message', 'like', '%' . $request->search_input . '%');
+                })
+                ->orWhereHas('services', function ($subQuery) use ($request) {
+                    $subQuery->where('service_name', 'like', '%' . $request->search_input . '%');
+                });
+        })
+        ->when($request->status, function ($query) use ($request) {
+            $query->where('status', $request->status);
+        })
+        ->when($request->service_id, function ($query) use ($request) {
+            $query->where('service_id', $request->service_id);
+        })
+        ->when($request->to, function ($query) use ($request) {
+            $query->whereDate('date', '<=', $request->to);
+        })
+        ->when($request->from, function ($query) use ($request) {
+            $query->whereDate('date', '>=', $request->from);
+        })
+        ->orderBy('id', 'desc')
+        ->paginate(5);
 
-        if($request->search_input){
-            // $bookings = Bookings::where("service_name", "LIKE", "%$request->search_input%")
-            // ->orWhere("description", "LIKE", "%$request->search_input%")
-            // ->paginate(5);
-        }
-
-        return view("bookings/index", compact("title", "bookings"));
+        // dd($bookings->get());
+        $services = Services::all();
+        return view("bookings/index", compact("title", "bookings", "services"));
     }
 
     /**
@@ -88,7 +115,7 @@ class BookingsController extends Controller
                 'content' => 'Welcome to Photogram, your account has been created successfully,for more details about booking can be found in your account',
                 'username' => $request->client_email,
                 'password' => $temp_password,
-                'url' => config('app.url') . '/login',
+                'url' => config('app.url') . '/account-login',
             ];
 
             Mail::to($request->client_email)->send(new \App\Mail\NewAccountMail($details));

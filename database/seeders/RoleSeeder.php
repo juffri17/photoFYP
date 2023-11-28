@@ -20,6 +20,18 @@ class RoleSeeder extends Seeder
             'create-user',
             'edit-user',
             'delete-user',
+            'add-service',
+            'edit-service',
+            'delete-service',
+            'add-booking',
+            'edit-booking',
+            'delete-booking',
+        ]);
+
+        $client->givePermissionTo([
+            'add-booking',
+            'edit-booking',
+            'delete-booking',
         ]);
     }
 }

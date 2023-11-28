@@ -11,7 +11,7 @@ class Bookings extends Model
 
     public function client()
     {
-        return $this->belongsTo(User::class, 'id');
+        return $this->belongsTo(User::class, 'client_id');
     }
 
     public function user()
@@ -19,8 +19,13 @@ class Bookings extends Model
         return $this->belongsTo(User::class,'id');
     }
 
-    public function transactions()
+    public function booking_details()
     {
-        return $this->hasOne(BookingDetails::class);
+        return $this->belongsTo(BookingDetails::class,'id');
+    }
+
+    public function services()
+    {
+        return $this->belongsTo(Services::class,'service_id');
     }
 }

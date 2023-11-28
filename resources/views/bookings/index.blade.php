@@ -6,7 +6,7 @@
             <div class="card card-scroll">
                 <div class="card-body">
                     <div class="">
-                        <form id="formSearch" method="get" action="{{ route('services') }}">
+                        <form id="formSearch" method="get" action="{{ route('bookings') }}">
                             <ul class="filter-bar-vessel">
                                 <section class="d-block search-bar-vessel my-2">
                                     <li class="filter-item search-bar">
@@ -17,36 +17,57 @@
                                 </section>
                                 <section class="d-flex">
                                     <div class="filter-item" style="margin-right: 10px;">
-                                        <label for=status-filter"
-                                            class="form-control-label">Status</label>
-                                        <select name="status_filter" class="form-select form-select-sm select2"
+                                        <label for=status-filter" class="form-control-label">Status</label>
+                                        <select name="status" class="form-select form-select-sm select2"
                                             id="status-filter" data-live-search="true">
                                             <option value="">All Status</option>
+                                            @php
+                                            $statuses = [
+                                            1 => 'Pending',
+                                            2 => 'Ongoing',
+                                            3 => 'Completed',
+                                            4 => 'Cancelled',
+                                            ];
+                                            @endphp
+                                            @foreach ($statuses as $key => $status)
+                                            @if (Request::get('status') == $key)
+                                                <option value="{{ $key }}" selected>{{ $status }}</option>
+                                            @endif
+                                                <option value="{{ $key }}">{{ $status }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                     <div class="filter-item">
-                                        <label for="package-filter"
-                                            class="form-control-label">Service</label>
-                                        <select name="product_filter" class="form-select form-select-sm"
+                                        <label for="package-filter" class="form-control-label">Service</label>
+                                        <select name="service_id" class="form-select form-select-sm"
                                             id="package-filter" data-live-search="true">
                                             <option value="">All Services</option>
+                                            @if (!empty($services))
+                                                @foreach ($services as $service)
+                                                @if (Request::get('service_id') == $service['id'])
+                                                    <option value="{{ $service['id'] }}" selected>
+                                                        {{ $service['service_name'] }}</option>
+                                                @endif
+                                                    <option value="{{ $service['id'] }}">
+                                                        {{ $service['service_name'] }}</option>
+                                                @endforeach
+                                            @endif
                                         </select>
                                     </div>
                                 </section>
                                 <section class="d-flex">
                                     <div class="filter-item" style="margin-right: 10px;">
-                                        <label for="example-datetime-local-from"
-                                            class="form-control-label">From</label>
-                                        <input class="form-control" type="datetime-local" value="{{ Request::get('datetime') ?? '' }}"
+                                        <label for="example-datetime-local-from" class="form-control-label">From</label>
+                                        <input class="form-control" type="date" name="from"
+                                            value="{{ Request::get('from') ?? '' }}"
                                             id="example-datetime-local-from" onfocus="focused(this)"
                                             onfocusout="defocused(this)">
                                     </div>
                                     <div class="filter-item">
-                                        <label for="example-datetime-local-to"
-                                            class="form-control-label">To</label>
-                                        <input class="form-control" type="datetime-local" value="{{ Request::get('datetime') ?? '' }}"
-                                            id="example-datetime-local-to" onfocus="focused(this)"
-                                            onfocusout="defocused(this)">
+                                        <label for="example-datetime-local-to" class="form-control-label">To</label>
+                                        <input class="form-control" type="date" name="to"
+                                            value="{{ Request::get('to') ?? '' }}" id="example-datetime-local-to"
+                                            onfocus="focused(this)" onfocusout="defocused(this)">
                                     </div>
                                 </section>
 
@@ -89,10 +110,79 @@
                             Payment Info</th>
                         <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                             Status</th>
+                        <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                            Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if (count($bookings) == 0)
+                    @if (!empty($bookings))
+                        @foreach ($bookings as $booking)
+                            <tr>
+                                <td>
+                                    <div class="d-flex px-2 py-1">
+                                        <div class="d-flex flex-column justify-content-center">
+                                            <p class="text-xs font-weight-bold mb-0">
+                                                {{ str_pad($booking['id'], 4, '0', STR_PAD_LEFT) }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <p class="text-xs font-weight-bold mb-0">{{ $booking->client['name'] }}</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $booking->booking_details['phone'] }}</p>
+                                    <p class="text-xs text-secondary mb-0">{{ $booking->client['email'] }}</p>
+                                    <p class="text-xs text-secondary mb-0">
+                                        {{ $booking->booking_details['company_name'] ?? '-' }}</p>
+                                </td>
+                                <td class="align-middle text-center">
+                                    <span
+                                        class="text-secondary text-xs font-weight-bold">{{ date('d M Y', strtotime($booking['date'])) }}</span>
+                                </td>
+                                <td class="align-middle text-center">
+                                    <span
+                                        class="text-secondary text-xs font-weight-bold">{{ $booking->services['service_name'] }}</span>
+                                </td>
+                                <td class="align-middle text-center">
+                                    {{-- <span --}}
+                                    {{-- class="text-secondary text-xs font-weight-bold">{{ $booking->booking_details['payment_method'] == 1 ? '' }}</span> --}}
+                                    <p class="text-xs text-secondary mb-0">
+                                        {{ $booking->booking_details['payment_status'] == 'pending' ? 'Unpaid' : 'Paid' }}
+                                    </p>
+                                    <p class="text-xs text-bold text-secondary mb-0">[
+                                        MYR {{ number_format($booking->booking_details['total_price'], 2) }} ]</p>
+                                </td>
+                                <td class="align-middle text-center">
+                                    <span class="text-secondary text-xs font-weight-bold">
+                                        @if ($booking['status'] == 1)
+                                            <span class="badge bg-gradient-warning">Pending</span>
+                                        @elseif($booking['status'] == 2)
+                                            <span class="badge bg-gradient-info">Ongoing</span>
+                                        @elseif($booking['status'] == 4)
+                                            <span class="badge bg-gradient-danger">Cancelled</span>
+                                        @else
+                                            <span class="badge bg-gradient-success">Completed</span>
+                                        @endif
+                                    </span>
+                                </td>
+                                {{-- <td class="align-middle text-center">
+                                    <a href="javascript:;" onclick="openView('{{ $booking['id'] }}')"
+                                        class="text-secondary font-weight-bold text-xs d-block mb-2"
+                                        data-toggle="tooltip" data-original-title="View user">
+                                        View
+                                    </a>
+                                    <a href="javascript:;" onclick="openEdit('{{ $booking['id'] }}')"
+                                        class="text-secondary font-weight-bold text-xs d-block mb-2"
+                                        data-toggle="tooltip" data-original-title="Edit user">
+                                        Edit
+                                    </a>
+                                    <a href="javascript:;" onclick="openDelete('{{ $booking['id'] }}')"
+                                        class="text-secondary font-weight-bold text-xs d-block mb-2"
+                                        data-toggle="tooltip" data-original-title="Delete user">
+                                        Delete
+                                    </a>
+                                </td> --}}
+                            </tr>
+                        @endforeach
+                    @else
                         <tr>
                             <td colspan="5" class="text-center">
                                 <p class="text-xs font-weight-bold mb-0">No data
@@ -100,51 +190,6 @@
                             </td>
                         </tr>
                     @endif
-                    @foreach ($bookings as $service)
-                        <tr>
-                            <td>
-                                <div class="d-flex px-2 py-1">
-                                    <div>
-                                        @php
-                                            $images = json_decode($service['image'], true);
-                                        @endphp
-                                        <img src="{{ asset('images/' . $images[0]) }}" class="avatar avatar-sm me-3">
-                                    </div>
-                                    <div class="d-flex flex-column justify-content-center">
-                                        <h6 class="mb-0 text-xs">{{ $service['service_name'] }}</h6>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <p class="text-xs font-weight-bold mb-0">MYR {{ number_format($service['price'], 2) }}
-                                </p>
-                            </td>
-                            <td class="align-middle text-center text-sm" style="width:460px">
-                                <p class="text-xs font-weight-bold mb-0 text-wrap">{{ $service['description'] }}</p>
-                            </td>
-                            <td class="align-middle text-center">
-                                <span
-                                    class="text-secondary text-xs font-weight-bold">{{ date('d M Y', strtotime($service['created_at'])) }}</span>
-                            </td>
-                            <td class="align-middle text-center">
-                                <a href="javascript:;" onclick="openView('{{ $service['id'] }}')"
-                                    class="text-secondary font-weight-bold text-xs d-block mb-2" data-toggle="tooltip"
-                                    data-original-title="View user">
-                                    View
-                                </a>
-                                <a href="javascript:;" onclick="openEdit('{{ $service['id'] }}')"
-                                    class="text-secondary font-weight-bold text-xs d-block mb-2" data-toggle="tooltip"
-                                    data-original-title="Edit user">
-                                    Edit
-                                </a>
-                                <a href="javascript:;" onclick="openDelete('{{ $service['id'] }}')"
-                                    class="text-secondary font-weight-bold text-xs d-block mb-2" data-toggle="tooltip"
-                                    data-original-title="Delete user">
-                                    Delete
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
                 </tbody>
             </table>
             {{-- pagination --}}
