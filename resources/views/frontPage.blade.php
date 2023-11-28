@@ -147,21 +147,23 @@
     <section class="package-gallery py-5 my-5 container w-75">
         <div class="row m-0 w-100">
             <!-- LOOP DOWN THERE -->
-            @foreach ($services as $service)
-                @php
-                    $image = json_decode($service['image'], true);
-                @endphp
-                <div class="col-md-4">
-                    <div class="card text-bg-dark">
-                        {{-- <img src="{{asset('assets/jakob-owens-DQPP9rVLYGQ-unsplash.jpg')}}" class="card-img" alt="..."> --}}
-                        <img src="{{ asset('images/' . $image[0]) }}" class="card-img" alt="...">
-                        <div class="card-img-overlay">
-                            <h5 class="card-title bg-dark text-light p-2 rounded">{{ $service->service_name }}</h5>
-                            {{-- <p class="card-text bg-dark text-light p-2 rounded">{{$service->description}}</p> --}}
+            @if (isset($services))
+                @foreach ($services as $service)
+                    @php
+                        $image = json_decode($service['image'], true);
+                    @endphp
+                    <div class="col-md-4">
+                        <div class="card text-bg-dark">
+                            {{-- <img src="{{asset('assets/jakob-owens-DQPP9rVLYGQ-unsplash.jpg')}}" class="card-img" alt="..."> --}}
+                            <img src="{{ asset('images/' . $image[0]) }}" class="card-img" alt="...">
+                            <div class="card-img-overlay">
+                                <h5 class="card-title bg-dark text-light p-2 rounded">{{ $service->service_name }}</h5>
+                                {{-- <p class="card-text bg-dark text-light p-2 rounded">{{$service->description}}</p> --}}
+                            </div>
                         </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            @endif
             {{-- <div class="col-md-4">
                 <div class="card text-bg-dark">
                     <img src="{{asset('assets/jakob-owens-DQPP9rVLYGQ-unsplash.jpg')}}" class="card-img" alt="...">
@@ -222,9 +224,11 @@
                         <select class="form-select form-select-sm" name="service_id"
                             aria-label=".form-select-sm example">
                             <option value="" selected>Nothing Selected</option>
-                            @foreach ($services as $service)
-                                <option value="{{ $service->id }}">{{ $service->service_name }}</option>
-                            @endforeach
+                            @if (isset($services))
+                                @foreach ($services as $service)
+                                    <option value="{{ $service->id }}">{{ $service->service_name }}</option>
+                                @endforeach
+                            @endif
                         </select>
                     </div>
                     <div class="mb-3">
